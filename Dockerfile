@@ -1,74 +1,68 @@
-FROM ubuntu:latest
-MAINTAINER Ilampirai Nambi <mailme@ilam.in>
+FROM ubuntu:14.04
 
+MAINTAINER Michaelsun Baluyos <michae.baluyos@gmail.com>
+
+# see https://hub.docker.com/r/ilampirai/magentoone/
 # Install packages
-RUN apt-get update 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install supervisor
-#RUN DEBIAN_FRONTEND=noninteractive apt-get -y install supervisor git apache2 libapache2-mod-php5 mysql-server php5-mysql pwgen php-apc openssh-server
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install git 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apache2 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libapache2-mod-php5
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install mysql-server 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php5-mysql 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install pwgen 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php-apc
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php5-curl
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php5-gd
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php5-mcrypt
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install openssh-server
+RUN apt-get update -y
+RUN apt-get upgrade -y
+RUN apt-get dist-upgrade -y
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get -yq  --no-install-recommends install \
+		apache2 \
+		libapache2-mod-php5 \
+		php5-curl \
+		php5-gd \
+		php5-mysql \
+		php5-xmlrpc \
+		php-apc \
+		php5-mcrypt \
+		php5-cli \
+		mysql-server \
+		mysql-common \
+		mysql-client \
+		wget \
+		curl \
+		pwgen \
+		git
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer --insecure | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install phpunit
+RUN composer global require "phpunit/phpunit=4.1.*"
+RUN composer global require "phpunit/php-invoker=~1.1."
+RUN ln -s  ~/.composer/vendor/phpunit/phpunit/phpunit   /usr/bin/
+
+# Enable xdebug after composer
+RUN apt-get -yq --no-install-recommends install php5-xdebug
+ADD xdebug_settings.ini /etc/php5/mods-available/
+RUN php5enmod xdebug_settings
 RUN php5enmod mcrypt
 
-# Add image configuration and scripts
-ADD start-apache2.sh /start-apache2.sh
-ADD start-mysqld.sh /start-mysqld.sh
-ADD run.sh /run.sh
-RUN chmod 755 /*.sh
-ADD my.cnf /etc/mysql/conf.d/my.cnf
-ADD supervisord-apache2.conf /etc/supervisor/conf.d/supervisord-apache2.conf
-ADD supervisord-mysqld.conf /etc/supervisor/conf.d/supervisord-mysqld.conf
-ADD start-sshd.conf /etc/supervisor/conf.d/start-sshd.conf
-
-# Remove pre-installed database
-RUN rm -rf /var/lib/mysql/*
-
-# Add MySQL utils
-ADD create_mysql_admin_user.sh /create_mysql_admin_user.sh
-RUN chmod 755 /*.sh
-
-# For openssh
-RUN mkdir -p /var/run/sshd
-RUN echo "root:admin123" | chpasswd
-RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-
 # config to enable .htaccess
+RUN service apache2 stop
+RUN service mysql stop
 ADD apache_default /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite
 
-# Configure /app folder with sample app
-#RUN git clone https://github.com/fermayo/hello-world-lamp.git /app
-#RUN mkdir -p /app && rm -fr /var/www/html && ln -s /app /var/www/html
-
-#Enviornment variables to configure php
+# Enviornment variables to configure php
 ENV PHP_UPLOAD_MAX_FILESIZE 10M
 ENV PHP_POST_MAX_SIZE 10M
 
 #Get Magento files
-RUN rm -fr /var/www/html
-RUN wget http://www.magentocommerce.com/downloads/assets/1.9.0.1/magento-1.9.0.1.tar.gz
-RUN mv magento-1.9.0.1.tar.gz /tmp
-RUN cd /tmp && tar -zxvf magento-1.9.0.1.tar.gz
-RUN mv /tmp/magento /app -f
-#RUN cd /var/www/html/ && mv magento/*  magento/.htaccess .
-#RUN mv /var/www/html/magento/* /var/www/html/
-#RUN mv /var/www/html/magento/.htaccess /var/www/html/
-RUN chmod -R o+w /app/media /app/var
-RUN chmod o+w /app/app/etc
-RUN cd /app && wget http://sourceforge.net/projects/adminer/files/latest/download?source=files
-RUN cd /app && mv download\?source\=files adminer.php
+RUN wget https://github.com/OpenMage/magento-mirror/archive/1.9.2.4.tar.gz --no-check-certificate -P /tmp
+RUN tar -zxvf /tmp/1.9.2.4.tar.gz -C /tmp
+RUN cp -al /tmp/magento-mirror-1.9.2.4/* /var/www/html -f
+RUN rm -rf /tmp/magento-mirror-1.9.2.4 /tmp/1.9.2.4.tar.gz
+RUN chmod -R o+w /var/www/html/media /var/www/html/var /var/www/html/app/etc
 
-RUN mkdir -p /app && rm -fr /var/www/html && ln -s /app /var/www/html
+RUN wget http://sourceforge.net/projects/adminer/files/latest/download?source=files --no-check-certificate -P /var/www/html
+RUN mv /var/www/html/download\?source\=files adminer.php
+
 # Add volumes for MySQL 
-VOLUME  ["/etc/mysql", "/var/lib/mysql" ]
+VOLUME  ["/etc/mysql", "/var/lib/mysql"]
 
 EXPOSE 80 3306 22
-CMD ["/run.sh"]

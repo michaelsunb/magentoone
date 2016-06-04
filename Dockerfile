@@ -26,6 +26,7 @@ RUN apt-get -yq  --no-install-recommends install \
 		wget \
 		curl \
 		pwgen \
+		phpmyadmin \
 		git
 
 # Install composer
@@ -58,9 +59,6 @@ RUN tar -zxvf /tmp/1.9.2.4.tar.gz -C /tmp
 RUN cp -al /tmp/magento-mirror-1.9.2.4/* /var/www/html -f
 RUN rm -rf /tmp/magento-mirror-1.9.2.4 /tmp/1.9.2.4.tar.gz
 RUN chmod -R o+w /var/www/html/media /var/www/html/var /var/www/html/app/etc
-
-RUN wget http://sourceforge.net/projects/adminer/files/latest/download?source=files --no-check-certificate -P /var/www/html
-RUN mv /var/www/html/download\?source\=files adminer.php
 
 # Add volumes for MySQL 
 VOLUME  ["/etc/mysql", "/var/lib/mysql"]

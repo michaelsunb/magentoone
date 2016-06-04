@@ -6,6 +6,7 @@
                 Options FollowSymLinks
                 AllowOverride None
         </Directory>
+		
         <Directory /var/www/html>
                 Options Indexes FollowSymLinks MultiViews
                 # To make wordpress .htaccess work
@@ -21,6 +22,14 @@
                 Order allow,deny
                 Allow from all
         </Directory>
+		
+		Alias /database/ "/usr/share/php5/phpmyadmin/"
+		<Directory "/usr/share/php5/phpmyadmin/">
+			Order allow,deny
+			Allow from all
+			# New directive needed in Apache 2.4.3: 
+			Require all granted
+		</Directory>
 
         ErrorLog ${APACHE_LOG_DIR}/error.log
 

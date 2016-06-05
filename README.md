@@ -1,105 +1,67 @@
-##  Magento ONE
-Magento with db manager running easily in just one build / run.
+## Before using
+Docker containers are not "lightweight VMs" or VMs. They should thought of like
+[processes][docker_process] but really not because it much more complicated than that.
+
+Please google `Containers are not VMs` to get an understanding.
+
+I say [processes][docker_process] because of the Docker best practices, and that 
+this container is `bundled` with a lot of applications, which is not good practice.
+
+Also please read the Docker best practices for [Containers should be ephemeral][docker_ephemeral].
+Containers should be `ephemeral` meaning they should be short lived, and that this
+container should not be used in production or anything else other than testing.
+
+Please be aware that when your container is exited, all the data in the MySql database
+and any editted files inside the container will start over from the beginning.
+In other words anything changed from inside the container will be lost.
+
+### Motivation
+To quickly start up a LAMP server with phpmyadmin. Magento is a plus but really you
+can add any PHP application using `-v /(path to your app)/:/var/www/html/`
 
 ### What's bundled :
-- Magento 1.9.0.1
-- Adminer (Db Manager)
+- Magento 1.9.2.4
+- PhpMyAdmin
 - Ubuntu 14.04 with shell access
-- AMP (Apache (2.0) / Php (5.5.9) / Mysql)
-- Supervisor [to keep them up and running all time]
+- AMP (Apache (2.0) / Php (5.6) / Mysql)
+- vim, curl, git, pwgen, wget, xdebug, composer and phpunit
 
-### How to Run using docker hub
-This is simple and one command that does it all
-> docker run -d -p 80:80 -p 2222:22 ilampirai/magentoone
+### How to run Magento using Docker Hub
+Run the container and interact with it
+> docker run --rm -it --name anynameyouwant -p 80:80 michaelsunb/magentoone /bin/bash
 
-Thats it, The docker image will be pulled and start the container automatically.
+Or you can have your own Magento at this folder `/home/docker/data/` and run
+> docker run --rm -it --name anynameyouwant -p 80:80 -v /home/docker/data/:/var/www/html/ michaelsunb/lamp /bin/bash
+
+NOTE: `--rm` will remove the container named "anynameyouwant" upon exit. 
+      You can omit it from the command if you choose.
+
+Inside the container
+> service apache2 start
+> service mysql start
+
+NOTE: You will have to do this every time you start up or exec into a container.
+
+Then once done go to `http://(your docker ip)/phpmyadmin`, create a database called `magento`
+and start your Magento installation by going to `http://(your docker ip)/index.php`
+
+NOTE: You will have to do this every time you start up a new container.
 
 ### How to build & run :
 Step 1 : Build
 Get into your server with SHELL access. And run a git pull which follows
-> git clone https://github.com/ilampirai/magentoone.git .
+> git clone https://github.com/michaelsunb/magentoone.git .
 
 NOTE: There is a tiny little dot in the end
 
 This will get basic files for building our docker image. Then start the build using
-> docker build -t {sitename}/magento .
+> docker build -t {sitename}/magentoone .
 
 NOTE: There is a tiny little dot in the end
 
-This will take some time wait till the docker finish building. Once done, Docker will bring a success message.
-
 Step 2 : Run
-Using the docker image we build we can bring the server up in seconds. 
+Follow the steps from `How to run Magento using Docker Hub` but except for `michaelsunb/magentoone`
+replace it with {sitename}/magentoone
 
-Just execute the final shell command  
-> docker run -d -p 80:80 -p 2222:22 {sitename}/magento
-
-This gives a container ID and your new magento is ready to be installed.
-
-### Installing Magento :
-Haha Not going to tell you the whole process just the starting point, Hoping you know the rest.
-
-Open a browser and type 
-> http://your.ip.address-or-sitename.com/
-
-You can see a brand new magneto waiting to be installed.
-
-Proceed the magento setup and when you are in need of Database details,
-There are two users for us to choose.
-First is our default root user with only the localhost connection, the logins are 
-> root / unknown
-
-Second is the user with external access, With which you can login from other servers too username is admin
-
-To find your password for admin you must type 
-> docker ps
-
-which shows the running containers and id note down the container id
-Then run
-> docker logs {container id}
-
-That will print down the password like 
-
-mysql -uadmin -pXXXXXXXXXXX -h<host> -P<port>
-
-you can use any account since we are running magento only from localhost.
-
-After finding out the password or using root account login into 
-> http://your.ip.address-or-sitename.com/adminer.php
-NOTE : In a separate tab
-
-You will get your Database Manager. 
-Create a new database for Magento and use this info in Magento installation process and proceed. 
-
-Thats it your Magento store is now running!!!!
-
-### Shell Access to your Magento :
-To access files you can use the shell access with 
-- Host : your site ip or domain
-- Port : 2222
-- User : root
-- Pass : admin123
-
-Make sure you change the password on first login this is just a easy password that anyone can hack.
-> passwd
-this will help you set new password.
-
-That's the full story for now and this is not the end some updates like 
-- File Editor
-- Selected version of magento
-- Browser Terminal
-are in development phase and will be added soon.
-
-Thanks to tutum-docker for LAMP, That gave me a good start.
-
-
-
-
-
-
-
-
-
-
-
-
+[docker_process]: https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#run-only-one-process-per-container
+[docker_ephemeral]: https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#containers-should-be-ephemeral

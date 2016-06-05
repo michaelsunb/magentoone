@@ -2,7 +2,6 @@ FROM ubuntu:14.04
 
 MAINTAINER Michaelsun Baluyos <michae.baluyos@gmail.com>
 
-# see https://hub.docker.com/r/ilampirai/magentoone/
 # Install packages
 RUN apt-get update -y
 RUN apt-get upgrade -y
@@ -67,6 +66,6 @@ RUN rm -rf /tmp/magento-mirror-1.9.2.4 /tmp/1.9.2.4.tar.gz
 RUN chmod -R o+w /var/www/html/media /var/www/html/var /var/www/html/app/etc
 
 # Add volumes for MySQL 
-VOLUME  ["/etc/mysql", "/var/lib/mysql"]
+VOLUME ["/etc/mysql", "/var/lib/mysql"]
 
 EXPOSE 80 3306 22

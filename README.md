@@ -44,8 +44,9 @@ Inside the container run
 
 NOTE: You will have to do this every time you start up or exec into a container.
 
-Then once done go to `http://{your docker ip}/phpmyadmin`, create a database called `magento`
-and start your Magento installation by going to `http://{your docker ip}/index.php`
+Then once done go to `http://{your docker ip}/phpmyadmin`. The MySql username is
+`root` and password is nothing. Log in and create a database called `magento`.
+Now you can start your Magento installation by going to `http://{your docker ip}/index.php`
 
 NOTE: You will have to do this every time you start up a new container.
 

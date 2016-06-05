@@ -4,8 +4,8 @@ like [processes][docker_process] but really not because it is much more complica
 
 Please google `Containers are not VMs` to get a better understanding.
 
-I say [processes][docker_process] because of the Docker best practices, and that 
-this container is `bundled` with a lot of applications, which is not good practice.
+[Processes][docker_process] because of the Docker best practices, and that this
+container is `bundled` with a lot of applications, which is not good practice.
 
 Also please read the Docker best practices for [Containers should be ephemeral][docker_ephemeral].
 Containers should be `ephemeral` meaning they should be short lived, and that this
@@ -13,7 +13,7 @@ container should not be used in production or anything else other than testing.
 
 Please be aware that when your container is exited, all the data in the MySql database
 and any editted files inside the container will start over from the beginning.
-In other words anything changed from inside the container will be lost.
+In other words any changes from inside the container will be lost.
 
 ### Motivation
 To quickly start up a LAMP server with phpmyadmin. Magento is a plus but really you
@@ -37,7 +37,7 @@ Or you can have your own Magento at this folder `/home/docker/data/` and run
 NOTE: `--rm` will remove the container named "anynameyouwant" upon exit. 
       You can omit it from the command if you choose.
 
-Inside the container
+Inside the container run
 > service apache2 start
 
 > service mysql start
@@ -50,7 +50,7 @@ and start your Magento installation by going to `http://{your docker ip}/index.p
 NOTE: You will have to do this every time you start up a new container.
 
 ### How to build & run :
-Step 1 : Build
+Step 1 :
 Get into your server with SHELL access. And run a git pull which follows
 > git clone https://github.com/michaelsunb/magentoone.git .
 
@@ -61,7 +61,7 @@ This will get basic files for building our docker image. Then start the build us
 
 NOTE: There is a tiny little dot in the end
 
-Step 2 : Run
+Step 2 :
 Follow the steps from [How to run Magento using Docker Hub][how_to_run] but instead of `michaelsunb/magentoone`
 replace it with `{sitename}/magentoone`
 

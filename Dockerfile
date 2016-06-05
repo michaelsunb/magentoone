@@ -35,7 +35,8 @@ RUN curl -sS https://getcomposer.org/installer --insecure | php -- --install-dir
 # Install phpmyadmin using composer
 RUN composer create-project phpmyadmin/phpmyadmin --repository-url=https://www.phpmyadmin.net/packages.json --no-dev /var/www/phpmyadmin
 # Mysql has no password, so do string replace to allow no password for phpmyadmin. Note not safe.
-RUN sed -i "s/\$cfg\['Servers'\]\[\$i\]\['AllowNoPassword'\] \= false/\$cfg\['Servers'\]\[\$i\]\['AllowNoPassword'\] \= true/g" /var/www/phpmyadmin/libraries/config.default.php
+RUN grep -rl "\$cfg\['Servers'\]\[\$i\]\['AllowNoPassword'\] = false" /var/www/phpmyadmin | \
+    xargs sed -i "s/\$cfg\['Servers'\]\[\$i\]\['AllowNoPassword'\] = false/\$cfg\['Servers'\]\[\$i\]\['AllowNoPassword'\] = true/g"
 
 # Install phpunit
 RUN composer global require "phpunit/phpunit=4.1.*"

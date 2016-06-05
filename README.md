@@ -1,8 +1,8 @@
 ## Before using
-Docker containers are not "lightweight VMs" or VMs. They should thought of like
-[processes][docker_process] but really not because it much more complicated than that.
+Docker containers are not "lightweight VMs" or VMs. They should be thought of something
+like [processes][docker_process] but really not because it is much more complicated than that.
 
-Please google `Containers are not VMs` to get an understanding.
+Please google `Containers are not VMs` to get a better understanding.
 
 I say [processes][docker_process] because of the Docker best practices, and that 
 this container is `bundled` with a lot of applications, which is not good practice.
@@ -17,7 +17,8 @@ In other words anything changed from inside the container will be lost.
 
 ### Motivation
 To quickly start up a LAMP server with phpmyadmin. Magento is a plus but really you
-can add any PHP application using `-v /(path to your app)/:/var/www/html/`
+can add any PHP application using
+> docker run -it -p 80:80 -v /{path to your app}/:/var/www/html/ michaelsunb/magentoone /bin/bash
 
 ### What's bundled :
 - Magento 1.9.2.4
@@ -31,19 +32,20 @@ Run the container and interact with it
 > docker run --rm -it --name anynameyouwant -p 80:80 michaelsunb/magentoone /bin/bash
 
 Or you can have your own Magento at this folder `/home/docker/data/` and run
-> docker run --rm -it --name anynameyouwant -p 80:80 -v /home/docker/data/:/var/www/html/ michaelsunb/lamp /bin/bash
+> docker run --rm -it --name anynameyouwant -p 80:80 -v /home/docker/data/:/var/www/html/ michaelsunb/magentoone /bin/bash
 
 NOTE: `--rm` will remove the container named "anynameyouwant" upon exit. 
       You can omit it from the command if you choose.
 
 Inside the container
 > service apache2 start
+
 > service mysql start
 
 NOTE: You will have to do this every time you start up or exec into a container.
 
-Then once done go to `http://(your docker ip)/phpmyadmin`, create a database called `magento`
-and start your Magento installation by going to `http://(your docker ip)/index.php`
+Then once done go to `http://{your docker ip}/phpmyadmin`, create a database called `magento`
+and start your Magento installation by going to `http://{your docker ip}/index.php`
 
 NOTE: You will have to do this every time you start up a new container.
 
@@ -60,8 +62,9 @@ This will get basic files for building our docker image. Then start the build us
 NOTE: There is a tiny little dot in the end
 
 Step 2 : Run
-Follow the steps from `How to run Magento using Docker Hub` but except for `michaelsunb/magentoone`
-replace it with {sitename}/magentoone
+Follow the steps from [How to run Magento using Docker Hub][how_to_run] but except for `michaelsunb/magentoone`.
+Replace it with `{sitename}/magentoone`
 
 [docker_process]: https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#run-only-one-process-per-container
 [docker_ephemeral]: https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#containers-should-be-ephemeral
+[how_to_run]: https://github.com/michaelsunb/magentoone#how-to-run-magento-using-docker-hub

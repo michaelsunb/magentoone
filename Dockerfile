@@ -11,26 +11,31 @@ RUN apt-get dist-upgrade -y
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get -yq  --no-install-recommends install \
-		apache2 \
-		libapache2-mod-php5 \
-		php5-curl \
-		php5-gd \
-		php5-mysql \
-		php5-xmlrpc \
-		php-apc \
-		php5-mcrypt \
-		php5-cli \
-		mysql-server \
-		mysql-common \
-		mysql-client \
-		wget \
-		curl \
-		pwgen \
-		phpmyadmin \
-		git
+        apache2 \
+        libapache2-mod-php5 \
+        php5-curl \
+        php5-gd \
+        php5-mysql \
+        php5-xmlrpc \
+        php-apc \
+        php5-mcrypt \
+        php5-cli \
+        mysql-server \
+        mysql-common \
+        mysql-client \
+        wget \
+        curl \
+        pwgen \
+        vim \
+        git
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer --insecure | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install phpmyadmin using composer
+RUN composer create-project phpmyadmin/phpmyadmin --repository-url=https://www.phpmyadmin.net/packages.json --no-dev /var/www/phpmyadmin
+# Mysql has no password, so do string replace to allow no password for phpmyadmin. Note not safe.
+RUN sed -i "s/\$cfg\['Servers'\]\[\$i\]\['AllowNoPassword'\] \= false/\$cfg\['Servers'\]\[\$i\]\['AllowNoPassword'\] \= true/g" /var/www/phpmyadmin/libraries/config.default.php
 
 # Install phpunit
 RUN composer global require "phpunit/phpunit=4.1.*"

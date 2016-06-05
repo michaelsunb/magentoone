@@ -1,6 +1,6 @@
 FROM ubuntu:14.04
 
-MAINTAINER Michaelsun Baluyos <michae.baluyos@gmail.com>
+MAINTAINER Michaelsun Baluyos
 
 # Install packages
 RUN apt-get update -y

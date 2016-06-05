@@ -62,8 +62,8 @@ This will get basic files for building our docker image. Then start the build us
 NOTE: There is a tiny little dot in the end
 
 Step 2 : Run
-Follow the steps from [How to run Magento using Docker Hub][how_to_run] but except for `michaelsunb/magentoone`.
-Replace it with `{sitename}/magentoone`
+Follow the steps from [How to run Magento using Docker Hub][how_to_run] but instead of `michaelsunb/magentoone`
+replace it with `{sitename}/magentoone`
 
 [docker_process]: https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#run-only-one-process-per-container
 [docker_ephemeral]: https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#containers-should-be-ephemeral
